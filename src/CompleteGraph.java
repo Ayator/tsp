@@ -22,6 +22,67 @@ public class CompleteGraph{
         this.edgeMap = new HashMap<>();
     }
 
+    private CompleteGraph(Vertex[] vertices){
+        this.currentVertexNumber = 0;
+        this.currentEdgeNumber = 0;
+        this.verticesNumber = vertices.length;
+        this.vertices = vertices;
+        this.edgesNumber = this.verticesNumber * (this.verticesNumber - 1) / 2;
+        this.edges = new Edge[this.edgesNumber];
+        this.edgeMap = new HashMap<>();
+
+        for(int i = 0; i < vertices.length; i++){
+            // create a hashmap for it
+            edgeMap.put(vertices[i], new HashMap<>());
+            for(int j = 0; j < i; j++){
+                // notice that the new edge is always the second parameter
+                addEdge(getVertex(j), vertices[i]);
+            }
+        }
+    }
+
+    public static Vertex[] readVerticesFromFile(String filepath){
+        try {
+            File file = new File(filepath);
+            Scanner sc = new Scanner(file);
+            if(!sc.hasNextLine()){
+                System.out.println("Empty file.");
+                sc.close();
+                return null;
+            }
+            int n = Integer.parseInt(sc.nextLine());
+            
+            Vertex[] vertices = new Vertex[n];
+
+            for(int i = 0; i < n; i++){
+                if(!sc.hasNextLine()){
+                    System.out.println("File is missing lines.");
+                    sc.close();
+                    return null;
+                }
+                // read the vertices
+                float x = sc.nextFloat();
+                float y = sc.nextFloat();
+                // System.out.println(x + " " + y);
+                Vertex v = new Vertex(x, y, i);
+                vertices[i] = v;
+            }
+            sc.close();
+            // graph.printEdges();
+            return vertices;
+        } catch (FileNotFoundException e) {
+            System.out.println("Error while reading the file.");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static CompleteGraph FromVertices(Vertex[] vertices){
+        CompleteGraph graph = new CompleteGraph(vertices);
+        // graph.printEdges();
+        return graph;
+    }
+
     public static CompleteGraph readGraphFromFile(String filepath){
         File file = new File(filepath);
         try {

@@ -16,8 +16,17 @@ public class HamiltonianCycle {
         }
     }
 
+    private HamiltonianCycle(Vertex[] path){
+        this.path = path;
+    }
+
     // assumes the given list is an eulerian tour
     public static HamiltonianCycle FromEulerianPath(DoublyLinkedList<Vertex> path){
+        return new HamiltonianCycle(path);
+    }
+
+    // assumes the given array is an eulerian tour
+    public static HamiltonianCycle FromVertexArray(Vertex[] path){
         return new HamiltonianCycle(path);
     }
 

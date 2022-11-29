@@ -18,35 +18,35 @@ public class ThreeOpt {
 
     private static boolean reverseSegmentIfBetter(Vertex[] path, int i, int j, int k) {
         int n = path.length;
-        float[] d = new float[5];
-        d[0] = Edge.computeWeight(path[Math.floorMod(i - 1, n)], path[i])
-             + Edge.computeWeight(path[j - 1], path[j])
-             + Edge.computeWeight(path[k - 1], path[k % n]);
-        d[1] = Edge.computeWeight(path[Math.floorMod(i - 1, n)], path[j - 1])
-             + Edge.computeWeight(path[i], path[j])
-             + Edge.computeWeight(path[k - 1], path[k % n]);
-        if(d[1] + 0.1f < d[0]){
+        double[] d = new double[5];
+        d[0] = Edge.computeDoubleWeight(path[Math.floorMod(i - 1, n)], path[i])
+             + Edge.computeDoubleWeight(path[j - 1], path[j])
+             + Edge.computeDoubleWeight(path[k - 1], path[k % n]);
+        d[1] = Edge.computeDoubleWeight(path[Math.floorMod(i - 1, n)], path[j - 1])
+             + Edge.computeDoubleWeight(path[i], path[j])
+             + Edge.computeDoubleWeight(path[k - 1], path[k % n]);
+        if(d[1] < d[0]){
             reverse(path, i, j - 1);
             return true;
         }
-        d[2] = Edge.computeWeight(path[Math.floorMod(i - 1, n)], path[i])
-             + Edge.computeWeight(path[j - 1], path[k - 1])
-             + Edge.computeWeight(path[j], path[k % n]);
-        if(d[2] + 0.1f < d[0]){
+        d[2] = Edge.computeDoubleWeight(path[Math.floorMod(i - 1, n)], path[i])
+             + Edge.computeDoubleWeight(path[j - 1], path[k - 1])
+             + Edge.computeDoubleWeight(path[j], path[k % n]);
+        if(d[2] < d[0]){
             reverse(path, j, k - 1);
             return true;
         }
-        d[4] = Edge.computeWeight(path[k % n], path[i])
-             + Edge.computeWeight(path[j - 1], path[j])
-             + Edge.computeWeight(path[k - 1], path[Math.floorMod(i - 1, n)]);
-        if(d[4] + 0.1f < d[0]){
+        d[4] = Edge.computeDoubleWeight(path[k % n], path[i])
+             + Edge.computeDoubleWeight(path[j - 1], path[j])
+             + Edge.computeDoubleWeight(path[k - 1], path[Math.floorMod(i - 1, n)]);
+        if(d[4] < d[0]){
             reverse(path, i, k - 1);
             return true;
         }
-        d[3] = Edge.computeWeight(path[Math.floorMod(i - 1, n)], path[j])
-             + Edge.computeWeight(path[k - 1], path[i])
-             + Edge.computeWeight(path[j - 1], path[k % n]);
-        if(d[3] + 0.1f < d[0]){
+        d[3] = Edge.computeDoubleWeight(path[Math.floorMod(i - 1, n)], path[j])
+             + Edge.computeDoubleWeight(path[k - 1], path[i])
+             + Edge.computeDoubleWeight(path[j - 1], path[k % n]);
+        if(d[3] < d[0]){
             swapChunks(path, i, j, k);
             return true;
         }

@@ -29,6 +29,12 @@ public class Edge implements Comparable<Edge> {
         return deltaX * deltaX + deltaY * deltaY;
     }
 
+    public static double computeDoubleWeight(Vertex a, Vertex b){
+        double deltaX = (double) a.getX() - (double) b.getX();
+        double deltaY = (double) a.getY() - (double) b.getY();
+        return deltaX * deltaX + deltaY * deltaY;
+    }
+
     public String toString(){
         return getU().toString() + " to " + getV().toString() + " : " + getWeight();
     }
