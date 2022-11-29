@@ -47,7 +47,7 @@ int main(int argc, char* argv[]){
   assert(input.is_open());
   // cout << "Enter the output file name: ";
   string output_filename = argv[2];
-  cout << "Output is: " << output_filename << endl;
+  // cout << "Output is: " << output_filename << endl;
   //  cin >> output_filename;
   ifstream output;
   output.open(output_filename.data());
@@ -95,7 +95,8 @@ int main(int argc, char* argv[]){
   
   double tour_length = tour_dist(tour);
   // check by hand whether any differences are from roundoff
-  cout << "Claimed length : " << claimed_length;
-  cout << "Actual length: " << tour_length;
+  cout << "Claimed length : " << claimed_length << endl;
+  cout << "Actual length: " << tour_length << endl;
+  cout << "Equal: " << (claimed_length == tour_length) << endl;
   return 0;
 }

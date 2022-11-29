@@ -1,10 +1,10 @@
 # loop through all files in the folder above this one (called "..") that start with "tsp_"
 
 # each iteration call the file you're looking at "file"
-for file in ../tsp_*
+for file in bestOutput2/tsp_*
 do
-    # run the ./a program from the command line with "file" as an input file
+    # run the ./verifier program from the command line with "file" as an input file
     # and OUTPUT_{whatever the file name is after the first 3 characters)
-    # removing the first 3 characters removes the "../" from the file name
-    ./a $file ${file:3}
+    # removing the first 12 characters removes the "bestOutput2/" from the file name
+    ./verifier.exe $file ${file:12}
 done

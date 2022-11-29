@@ -50,6 +50,18 @@ public class HamiltonianCycle {
         return tourCost;
     }
 
+    public static float getTourWeight(Vertex[] vertices){
+        float tourWeight = 0f;
+        Vertex u = vertices[0];
+        int n = vertices.length;
+        for (int i = 1; i <= n; i++) {
+            Vertex v = vertices[i % n];
+            tourWeight += Edge.computeWeight(u, v);
+            u = v;
+        }
+        return tourWeight;
+    }
+
     public void printList(){
         System.out.println("Hamiltonian Cycle:");
         for (int i = 0; i < path.length; i++) {

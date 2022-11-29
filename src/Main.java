@@ -9,23 +9,21 @@ import java.util.Scanner;
 
 public class Main{
     public static void main(String[] args){
-        // runTSP("tsp_100_6");
         LinkedHashMap<String, Float> goals = getGoals();
         LinkedHashMap<String, Boolean> goalsBeaten = getGoalsBeaten(goals);
         for (String filename : goals.keySet()) {
             int n = 1;
-            // if(goalsBeaten.get(filename)){
-            //     n = 0;
-            // }
-            // else{
-            //     n = 1;
-            // }
+            if(goalsBeaten.get(filename)){
+                n = 0;
+            }
+            else{
+                n = 1000;
+            }
 
             System.out.println("Running " + filename);
             for (int i = 0; i < n; i++) {
                 runTSP(filename);
             }
-            // runTSP(filename);
             System.out.println("Done.");
             System.out.println("");
         }
@@ -37,25 +35,32 @@ public class Main{
         String bestOutputPath = "../bestOutput/" + filename;
 
         Vertex[] vertices = CompleteGraph.readVerticesFromFile(inputPath);
-        // CompleteGraph graph = CompleteGraph.FromVertices(vertices);
-        // // CompleteGraph graph = CompleteGraph.readGraphFromFile(inputPath);
-        // if(graph == null)
-        //     return;
-        // MinimumSpanningTree mst = MinimumSpanningTree.KruskalAlgorithm(graph);
-        // // mst.printEdges();
-        // Vertex[] oddDegreeVertices = mst.getOddDegVertices();
-        // // this doesn't guarantee <= 1.5 optimal solution because it's greedy...
-        // BipartiteGraph odd = BipartiteGraph.GreedyMinWeightPerfectMatching(graph, oddDegreeVertices);
-        // // odd.printPerfectMatchingEdges();
+        
+        HamiltonianCycle hamiltonianCycle;
+        if(filename.equals("tsp_85900_1")){
+            hamiltonianCycle = HamiltonianCycle.FromVertexArray(vertices);
+        }
+        else{
+            CompleteGraph graph = CompleteGraph.FromVertices(vertices);
+            // CompleteGraph graph = CompleteGraph.readGraphFromFile(inputPath);
+            if(graph == null)
+                return;
+            MinimumSpanningTree mst = MinimumSpanningTree.KruskalAlgorithm(graph);
+            // mst.printEdges();
+            Vertex[] oddDegreeVertices = mst.getOddDegVertices();
+            // this doesn't guarantee <= 1.5 optimal solution because it's greedy...
+            BipartiteGraph odd = BipartiteGraph.GreedyMinWeightPerfectMatching(graph, oddDegreeVertices);
+            // odd.printPerfectMatchingEdges();
 
-        // Multigraph multigraph = Multigraph.CombineBipartiteAndMST(mst, odd);
-        // // multigraph.printEdges();
-        // DoublyLinkedList<Vertex> eulerianPath = Multigraph.HierholzerAlgorithm(multigraph);
-        // // eulerianPath.printList();
-        // HamiltonianCycle hamiltonianCycle = HamiltonianCycle.FromEulerianPath(eulerianPath);
-        HamiltonianCycle hamiltonianCycle = HamiltonianCycle.FromVertexArray(vertices);
+            Multigraph multigraph = Multigraph.CombineBipartiteAndMST(mst, odd);
+            // multigraph.printEdges();
+            DoublyLinkedList<Vertex> eulerianPath = Multigraph.HierholzerAlgorithm(multigraph);
+            // eulerianPath.printList();
+            hamiltonianCycle = HamiltonianCycle.FromEulerianPath(eulerianPath);
+        }
         System.out.println("Hamiltonian Cycle found.");
-        TwoOpt.Apply(hamiltonianCycle);
+        // TwoOpt.Apply(hamiltonianCycle);
+        TwoOpt.SimulatedAnnealing(hamiltonianCycle);
         System.out.println("TwoOpt done.");
         ThreeOpt.Apply(hamiltonianCycle);
         System.out.println("ThreeOpt done.");
@@ -125,6 +130,10 @@ public class Main{
 
     public static LinkedHashMap<String, Float> getGoals(){
         LinkedHashMap<String, Float> goals = new LinkedHashMap<>(77);
+        // unbeaten
+        goals.put("tsp_2392_1", 378063f);
+        // goals.put("tsp_85900_1", 163000000f);
+        
         // goals.put("tsp_5_1", 4f);
         // goals.put("tsp_8_1", 13.9508f);
         // goals.put("tsp_51_1", 437.577f);
@@ -192,7 +201,7 @@ public class Main{
         // goals.put("tsp_2319_1", 261672f);
         // goals.put("tsp_2392_1", 378063f);// 3-opt works fine till here
 
-        // goals.put("tsp_3038_1", 160642f);
+        // goals.put("tsp_3038_1", 160642f);// 3-opt not tested
         // goals.put("tsp_3795_1", 35093.3f);
         // goals.put("tsp_4461_1", 211369f);
         // goals.put("tsp_5915_1", 688904f);
@@ -200,11 +209,11 @@ public class Main{
         // goals.put("tsp_7397_1", 27700000f);
         // goals.put("tsp_9432_1", 65994.6f);
         // goals.put("tsp_11849_1", 1120000f);
-        // goals.put("tsp_14051_1", 574617f);// 2-opt works fine till here
+        // goals.put("tsp_14051_1", 574617f);// Christofides works fine till here
 
-        // goals.put("tsp_18512_1", 790940f);
-        goals.put("tsp_33810_1", 78500000f);
-        // goals.put("tsp_85900_1", 163000000f);
+        // goals.put("tsp_18512_1", 790940f);// skip to 2-opt from the beginning (RAM)
+        // goals.put("tsp_33810_1", 78500000f);
+        // goals.put("tsp_85900_1", 163000000f);// 2-opt works for everything
         return goals;
     }
 }
