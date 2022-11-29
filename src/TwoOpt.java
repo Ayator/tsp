@@ -6,27 +6,27 @@ public class TwoOpt {
         int n = path.length;
         boolean hasChanged = true;
 
-        int k = 0;
+        // int k = 0;
         while(hasChanged){
             hasChanged = false;
             for (int i = 0; i < n - 1; i++) {
                 for (int j = i + 1; j < n; j++) {
-                    // new edges - current edges
-                    // j + 1 may overflow so use % to go the start of the path
-                    float df = Edge.computeWeight(path[i], path[j])
-                             + Edge.computeWeight(path[i + 1], path[(j + 1) % n]);
-                    float di = Edge.computeWeight(path[i], path[i + 1])
-                             + Edge.computeWeight(path[j], path[(j + 1) % n]);
+                    // delta = new edges - current edges
+                    // j + 1 will overflow from path.length so use % to go the start of the path
+                    double df = Edge.computeDoubleWeight(path[i], path[j])
+                             + Edge.computeDoubleWeight(path[i + 1], path[(j + 1) % n]);
+                    double di = Edge.computeDoubleWeight(path[i], path[i + 1])
+                             + Edge.computeDoubleWeight(path[j], path[(j + 1) % n]);
                     if(df < di){
                         reverse(path, i + 1, j);
                         hasChanged = true;
                     }
-                    k++;
+                    // k++;
                 }
             }
         }
         // expected iterations is used to compute temperature in Simulated Annealing
-        System.out.println("Iterations/Expected = " + k + "/" + (int)(n * n * Math.log(n) * 0.5d));
+        // System.out.println("Iterations/Expected = " + k + "/" + (int)(n * n * Math.log(n) * 0.5d));
     }
 
     // recursion leads to stack overflow, chenged to dp
@@ -53,14 +53,20 @@ public class TwoOpt {
         double oneOverKMax = 1d / (n * n * Math.log(n) * 0.5d);
         int k = 0;
         int initialTemperature = (int)getAverageWeight(path);
+        boolean isZero = false;
         Random r = new Random();
         int c = 0;
 
+        BigLoop:
         while(hasChanged){
             hasChanged = false;
             for (int i = 0; i < n - 1; i++) {
                 for (int j = i + 1; j < n; j++) {
-                    int temperature = getTemperature(k++, oneOverKMax, initialTemperature);
+                    int temperature = 0;
+                    if(!isZero){
+                        temperature = getTemperature(k++, oneOverKMax, initialTemperature);
+                        if(temperature == 0) isZero = true;
+                    }
                     // new edges - current edges
                     // j + 1 may overflow so use % to go the start of the path
                     float df = Edge.computeWeight(path[i], path[j])
@@ -82,6 +88,14 @@ public class TwoOpt {
                         c++;
                     }
                 }
+                // check for overflow (more than integer limit)
+                if(k < 0){
+                    System.out.println("Overtflow in Simulated Annealing. Switching to 2-opt.");
+                    shallowCopyArray(bestPath, path);
+                    TwoOpt.Apply(cycle);
+                    System.out.println("2-opt restarted.");
+                    break BigLoop;
+                }
             }
         }
         System.out.println("Simulated Annealing: " + c + "/" + k + " times uphill.");
@@ -99,7 +113,7 @@ public class TwoOpt {
         return (int)(initialTemperature / Math.exp(10 * k * oneOverKMax));
     }
 
-    private static <T> void shallowCopyArray(T[] from, T[] to){
+    public static <T> void shallowCopyArray(T[] from, T[] to){
         if(from.length != to.length) return;
         for (int i = 0; i < to.length; i++) {
             to[i] = from[i];

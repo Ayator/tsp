@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Random;
+
 public class HamiltonianCycle {
     Vertex[] path;
 
@@ -28,6 +31,65 @@ public class HamiltonianCycle {
     // assumes the given array is an eulerian tour
     public static HamiltonianCycle FromVertexArray(Vertex[] path){
         return new HamiltonianCycle(path);
+    }
+
+    // this could be improved by using a better data structure such that remove is O(1)
+    // but it's greedy so it's lower than Christofides anyways
+    public static HamiltonianCycle GreedyAlgorithm(Vertex[] vertices){
+        ArrayList<Vertex> myVertices = new ArrayList<>(vertices.length);
+        for (Vertex vertex : vertices) {
+            myVertices.add(vertex);
+        }
+        Vertex[] path = new Vertex[vertices.length];
+        int currentVertex = 0;
+        Edge minEdge = getMinimumWeightEdge(myVertices);
+        if(minEdge == null) return null;
+
+        path[currentVertex++] = minEdge.getU();
+        myVertices.remove(minEdge.getU());
+        path[currentVertex++] = minEdge.getV();
+        myVertices.remove(minEdge.getV());
+        Vertex u = minEdge.getV();
+        while(currentVertex < vertices.length){
+            Vertex v = getMinimumWeightVertex(myVertices, u);
+            path[currentVertex++] = v;
+            myVertices.remove(v);
+            u = v;
+        }
+        return new HamiltonianCycle(path);
+    }
+
+    private static Vertex getMinimumWeightVertex(ArrayList<Vertex> vertices, Vertex u){
+        Vertex minVertex = null;
+        double minWeight = Double.POSITIVE_INFINITY;
+        Random random = new Random();
+        for (int i = 0; i < vertices.size(); i++) {
+            double currentWeight = Edge.computeDoubleWeight(u, vertices.get(i));
+            if(currentWeight < minWeight || (currentWeight == minWeight && random.nextBoolean())){
+                minVertex = vertices.get(i);
+                minWeight = currentWeight;
+            }
+        }
+        return minVertex;
+    }
+
+    private static Edge getMinimumWeightEdge(ArrayList<Vertex> vertices){
+        Edge minEdge = null;
+        double minWeight = Double.POSITIVE_INFINITY;
+        Random random = new Random();
+        for (int i = 0; i < vertices.size(); i++) {
+            for (int j = 0; j < vertices.size(); j++) {
+                if(i == j) continue;
+                Vertex u = vertices.get(i);
+                Vertex v = vertices.get(j);
+                double currentWeight = Edge.computeDoubleWeight(u, v);
+                if(currentWeight < minWeight || (currentWeight == minWeight && random.nextBoolean())){
+                    minEdge = new Edge(u, v);
+                    minWeight = currentWeight;
+                }
+            }
+        }
+        return minEdge;
     }
 
     public String getTourString(){

@@ -12,20 +12,19 @@ public class Main{
         LinkedHashMap<String, Float> goals = getGoals();
         LinkedHashMap<String, Boolean> goalsBeaten = getGoalsBeaten(goals);
         for (String filename : goals.keySet()) {
-            int n = 1;
-            if(goalsBeaten.get(filename)){
-                n = 0;
-            }
-            else{
-                n = 1000;
-            }
+            int n = 10;
+            // if(goalsBeaten.get(filename)){
+            //     n = 1;
+            // }
+            // else{
+            //     n = 1;
+            // }
 
-            System.out.println("Running " + filename);
             for (int i = 0; i < n; i++) {
+                System.out.println("Running " + filename);
                 runTSP(filename);
+                System.out.println("");
             }
-            System.out.println("Done.");
-            System.out.println("");
         }
     }
 
@@ -33,12 +32,21 @@ public class Main{
         String inputPath = "../input/" + filename;
         String outputPath = "../output/" + filename;
         String bestOutputPath = "../bestOutput/" + filename;
+        // The Big Three
+        boolean isBig = "tsp_18512_1 tsp_33810_1 tsp_85900_1".contains(filename);
 
         Vertex[] vertices = CompleteGraph.readVerticesFromFile(inputPath);
         
         HamiltonianCycle hamiltonianCycle;
-        if(filename.equals("tsp_85900_1")){
-            hamiltonianCycle = HamiltonianCycle.FromVertexArray(vertices);
+        // for big inputs, just use greedy algorithm, and two opt
+        if(isBig){
+            // hamiltonianCycle = HamiltonianCycle.FromVertexArray(vertices);
+            hamiltonianCycle = HamiltonianCycle.GreedyAlgorithm(vertices);
+            System.out.println("Hamiltonian Cycle found.");
+            // 2-opt seems to work better than SA for these three
+            TwoOpt.Apply(hamiltonianCycle);
+            // TwoOpt.SimulatedAnnealing(hamiltonianCycle);
+            System.out.println("TwoOpt done.");
         }
         else{
             CompleteGraph graph = CompleteGraph.FromVertices(vertices);
@@ -57,13 +65,17 @@ public class Main{
             DoublyLinkedList<Vertex> eulerianPath = Multigraph.HierholzerAlgorithm(multigraph);
             // eulerianPath.printList();
             hamiltonianCycle = HamiltonianCycle.FromEulerianPath(eulerianPath);
+            System.out.println("Hamiltonian Cycle found.");
+            // TwoOpt.Apply(hamiltonianCycle);
+            TwoOpt.SimulatedAnnealing(hamiltonianCycle);
+            System.out.println("TwoOpt done.");
+            if(!"tsp_3038_1 tsp_3795_1 tsp_4461_1 tsp_5915_1 tsp_5934_1 tsp_7397_1 tsp_9432_1 tsp_11849_1 tsp_14051_1".contains(filename)){
+                // 3-opt may be too slow for these
+                // haven't tested how long yet
+                ThreeOpt.Apply(hamiltonianCycle);
+                System.out.println("ThreeOpt done.");
+            }
         }
-        System.out.println("Hamiltonian Cycle found.");
-        // TwoOpt.Apply(hamiltonianCycle);
-        TwoOpt.SimulatedAnnealing(hamiltonianCycle);
-        System.out.println("TwoOpt done.");
-        ThreeOpt.Apply(hamiltonianCycle);
-        System.out.println("ThreeOpt done.");
         // hamiltonianCycle.printList();
         saveToFile(hamiltonianCycle, outputPath, bestOutputPath);
     }
@@ -130,9 +142,8 @@ public class Main{
 
     public static LinkedHashMap<String, Float> getGoals(){
         LinkedHashMap<String, Float> goals = new LinkedHashMap<>(77);
-        // unbeaten
-        goals.put("tsp_2392_1", 378063f);
-        // goals.put("tsp_85900_1", 163000000f);
+        // how is this even possible
+        // goals.put("tsp_2392_1", 378063f);
         
         // goals.put("tsp_5_1", 4f);
         // goals.put("tsp_8_1", 13.9508f);
@@ -181,26 +192,25 @@ public class Main{
         // goals.put("tsp_724_1", 44981.4f);
         // goals.put("tsp_783_1", 9660.55f);
         // goals.put("tsp_1000_1", 20647700f);
-
-        // goals.put("tsp_1060_1", 247086f);
-        // goals.put("tsp_1084_1", 263421f);
-        // goals.put("tsp_1173_1", 62699f);
-        // goals.put("tsp_1291_1", 60009.7f);
-        // goals.put("tsp_1304_1", 297464f);
-        // goals.put("tsp_1323_1", 318667f);
-        // goals.put("tsp_1379_1", 60846.9f);
-        // goals.put("tsp_1400_1", 24147.8f);
-        // goals.put("tsp_1432_1", 169970f);
-        // goals.put("tsp_1577_1", 27299.8f);
-        // goals.put("tsp_1655_1", 72707.3f);
-        // goals.put("tsp_1748_1", 378852f);
-        // goals.put("tsp_1817_1", 67363.4f);
-        // goals.put("tsp_1889_1", 377287f);
-        // goals.put("tsp_2103_1", 89860.9f);
-        // goals.put("tsp_2152_1", 75714f);
-        // goals.put("tsp_2319_1", 261672f);
-        // goals.put("tsp_2392_1", 378063f);// 3-opt works fine till here
-
+        goals.put("tsp_1060_1", 247086f);
+        goals.put("tsp_1084_1", 263421f);
+        goals.put("tsp_1173_1", 62699f);
+        goals.put("tsp_1291_1", 60009.7f);
+        goals.put("tsp_1304_1", 297464f);
+        goals.put("tsp_1323_1", 318667f);
+        goals.put("tsp_1379_1", 60846.9f);
+        goals.put("tsp_1400_1", 24147.8f);
+        goals.put("tsp_1432_1", 169970f);
+        goals.put("tsp_1577_1", 27299.8f);
+        goals.put("tsp_1655_1", 72707.3f);
+        goals.put("tsp_1748_1", 378852f);
+        goals.put("tsp_1817_1", 67363.4f);
+        goals.put("tsp_1889_1", 377287f);
+        goals.put("tsp_2103_1", 89860.9f);
+        goals.put("tsp_2152_1", 75714f);
+        goals.put("tsp_2319_1", 261672f);
+        goals.put("tsp_2392_1", 378063f);// 3-opt works fine till here
+        
         // goals.put("tsp_3038_1", 160642f);// 3-opt not tested
         // goals.put("tsp_3795_1", 35093.3f);
         // goals.put("tsp_4461_1", 211369f);
@@ -209,7 +219,7 @@ public class Main{
         // goals.put("tsp_7397_1", 27700000f);
         // goals.put("tsp_9432_1", 65994.6f);
         // goals.put("tsp_11849_1", 1120000f);
-        // goals.put("tsp_14051_1", 574617f);// Christofides works fine till here
+        // goals.put("tsp_14051_1", 574617f);// Christofides works fine till here (PC is crying)
 
         // goals.put("tsp_18512_1", 790940f);// skip to 2-opt from the beginning (RAM)
         // goals.put("tsp_33810_1", 78500000f);

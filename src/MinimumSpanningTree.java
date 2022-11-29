@@ -37,49 +37,6 @@ public class MinimumSpanningTree {
         return mst;
     }
 
-    // Algorithm minimizing usage of edges
-    public static MinimumSpanningTree KruskalAlgorithm2(Vertex[] vertices){
-        MinimumSpanningTree mst = new MinimumSpanningTree(vertices);
-        DisjointSet<Vertex> disjointSet = new DisjointSet<>();
-        disjointSet.MakeSets(vertices);
-        float minWeight = 0f;
-        while(mst.currentEdgeNumber < vertices.length - 1){
-            ArrayList<Edge> minEdges = getMinimumEdges(vertices, minWeight);
-            minWeight = minEdges.get(0).getWeight();
-            for (Edge edge : minEdges) {
-                Vertex u = edge.getU();
-                Vertex v = edge.getV();
-                if(disjointSet.FindSet(u) != disjointSet.FindSet(v)){
-                    mst.addEdgeToMST(edge);
-                    disjointSet.UnionSet(u, v);
-                }
-            }
-        }
-        return mst;
-    }
-
-    private static ArrayList<Edge> getMinimumEdges(Vertex[] vertices, float minWeight){
-        ArrayList<Edge> minEdges = new ArrayList<>();
-        float maxWeight = Float.POSITIVE_INFINITY;
-        for (Vertex u : vertices) {
-            for (Vertex v : vertices) {
-                if(u == v) continue;
-                float currentWeight = Edge.computeWeight(u, v);
-                if(minWeight < currentWeight){
-                    if(currentWeight < maxWeight){
-                        minEdges.clear();
-                        maxWeight = currentWeight;
-                        minEdges.add(new Edge(u, v));
-                    }
-                    else if(currentWeight == maxWeight){
-                        minEdges.add(new Edge(u, v));
-                    }
-                }
-            }
-        }
-        return minEdges;
-    }
-
     public Vertex[] getVertices() {
         return vertices;
     }
@@ -116,4 +73,48 @@ public class MinimumSpanningTree {
             System.out.println(e.toString());
         }
     }
+
+    // Algorithm minimizing usage of edges
+    // decided it wasn't necessary since enough low results were found
+    // public static MinimumSpanningTree KruskalAlgorithm2(Vertex[] vertices){
+    //     MinimumSpanningTree mst = new MinimumSpanningTree(vertices);
+    //     DisjointSet<Vertex> disjointSet = new DisjointSet<>();
+    //     disjointSet.MakeSets(vertices);
+    //     float minWeight = 0f;
+    //     while(mst.currentEdgeNumber < vertices.length - 1){
+    //         ArrayList<Edge> minEdges = getMinimumEdges(vertices, minWeight);
+    //         minWeight = minEdges.get(0).getWeight();
+    //         for (Edge edge : minEdges) {
+    //             Vertex u = edge.getU();
+    //             Vertex v = edge.getV();
+    //             if(disjointSet.FindSet(u) != disjointSet.FindSet(v)){
+    //                 mst.addEdgeToMST(edge);
+    //                 disjointSet.UnionSet(u, v);
+    //             }
+    //         }
+    //     }
+    //     return mst;
+    // }
+
+    // private static ArrayList<Edge> getMinimumEdges(Vertex[] vertices, float minWeight){
+    //     ArrayList<Edge> minEdges = new ArrayList<>();
+    //     float maxWeight = Float.POSITIVE_INFINITY;
+    //     for (Vertex u : vertices) {
+    //         for (Vertex v : vertices) {
+    //             if(u == v) continue;
+    //             float currentWeight = Edge.computeWeight(u, v);
+    //             if(minWeight < currentWeight){
+    //                 if(currentWeight < maxWeight){
+    //                     minEdges.clear();
+    //                     maxWeight = currentWeight;
+    //                     minEdges.add(new Edge(u, v));
+    //                 }
+    //                 else if(currentWeight == maxWeight){
+    //                     minEdges.add(new Edge(u, v));
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return minEdges;
+    // }
 }
