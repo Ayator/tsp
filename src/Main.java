@@ -9,10 +9,10 @@ import java.util.Scanner;
 
 public class Main{
     public static void main(String[] args){
-        String filename = "tsp_8_1";
-        System.out.println("Running " + filename);
-        TravelingSalesmanProblem(filename);
-        System.out.println("");
+        // String filename = "tsp_8_1";
+        // System.out.println("Running " + filename);
+        // TravelingSalesmanProblem(filename);
+        // System.out.println("");
         runAll();
     }
 
@@ -213,7 +213,7 @@ public class Main{
 
         goals.put("tsp_2103_1", 89860.9f);
         goals.put("tsp_2152_1", 75714f);
-        goals.put("tsp_2319_1 ", 261672f);
+        goals.put("tsp_2319_1", 261672f);
         goals.put("tsp_2392_1", 378063f);// 3-opt works fine till here // this score is unreal
         goals.put("tsp_3038_1", 160642f);// 3-opt not tested
         goals.put("tsp_3795_1", 35093.3f);
