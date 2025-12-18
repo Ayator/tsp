@@ -18,10 +18,36 @@ Post-processing optimizations are applied to improve the initial tours:
 ## Directory Structure
 
 -   `src/`: Contains the Java source code for the solver.
-    -   `Main.java`: Entry point. Runs the solver on specified input files.
-    -   `HamiltonianCycle.java`: Implements Greedy and conversion from Eulerian paths.
-    -   `MinimumSpanningTree.java`, `BipartiteGraph.java`, `Multigraph.java`: Components for Christofides' algorithm.
-    -   `TwoOpt.java`, `ThreeOpt.java`: Local search optimizations.
+    -   **Core & Entry Point**:
+        -   `Main.java`: Entry point. Coordinates algorithms.
+        -   `Vertex.java`, `Edge.java`: Basic graph data structures.
+    -   **Christofides' Algorithm Components**:
+        -   `MinimumSpanningTree.java`: Kruskal's algorithm implementation.
+        -   `BipartiteGraph.java`: Minimum Weight Perfect Matching.
+        -   `Multigraph.java`: Eulerian path finding (Hierholzer's).
+        -   `DisjointSet.java`: Union-Find helper for MST.
+    -   **Optimizations & Heuristics**:
+        -   `HamiltonianCycle.java`: Greedy algorithm and Eulerian -> Hamiltonian conversion.
+        -   `TwoOpt.java`, `ThreeOpt.java`: Local search optimizations.
+    -   **Graph Models**:
+        -   `CompleteGraph.java`: Represents the implicit complete graph.
+
+## Algorithms Detail
+
+### Christofides' Algorithm
+This project uses Christofides' algorithm for typically smaller to medium datasets to guarantee a tour within 1.5x of the optimal solution. The steps are:
+1.  **Minimum Spanning Tree (MST)**: Generate an MST of the graph using **Kruskal's Algorithm** (`MinimumSpanningTree.java`).
+2.  **Odd-Degree Vertices**: Identify set $O$ of vertices with odd degree in the MST. By handshaking lemma, $|O|$ is even.
+3.  **Minimum Weight Perfect Matching**: Find a minimum weight perfect matching $M$ on the vertices in $O$ (`BipartiteGraph.java`).
+4.  **Combine**: Add edges from $M$ to the MST to form a Multigraph $H$ (`Multigraph.java`). Determining vertices in $H$ now have even degree.
+5.  **Eulerian Circuit**: Find an Eulerian circuit in $H$ (`HierholzerAlgorithm` in `Multigraph.java`).
+6.  **Hamiltonian Circuit**: Convert the Eulerian circuit into a Hamiltonian circuit by skipping previously visited vertices (shortcutting) (`HamiltonianCycle.java`).
+
+### Greedy Algorithm
+For very large datasets where $O(n^3)$ matching is infeasible, a Greedy approach is used:
+1.  Start from an arbitrary vertex.
+2.  Always visit the nearest unvisited neighbor.
+3.  Return to start when all vertices are visited.
 -   `input/`: Directory for input files (TSP instances).
 -   `output/`: Directory where generated tour files are saved.
 -   `bestOutput/`: Stores the best-known solutions found so far.
