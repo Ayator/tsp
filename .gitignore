@@ -1,0 +1,22 @@
+# Compiled Java class files
+*.class
+
+# Compiled C++ executables and object files
+*.exe
+*.o
+*.out
+verifier
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.iml
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build directories
+bin/
+build/
